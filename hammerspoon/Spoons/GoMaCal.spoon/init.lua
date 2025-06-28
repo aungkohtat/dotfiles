@@ -9,13 +9,13 @@ obj.__index = obj
 -- Metadata
 obj.name = "GoMaCal"
 obj.version = "1.0"
-obj.author = "omerxx"
-obj.homepage = "https://github.com/omerxx/GoMaCal"
+obj.author = "aungkohtet"
+obj.homepage = "https://github.com/aungkohtet/GoMaCal"
 obj.license = "MIT - https://opensource.org/licenses/MIT"
 
 -- Internal variables
 obj.timer = nil
-obj.calendarPath = '/Users/omerxx/dotfiles/hammerspoon/calendar-app/calapp'
+obj.calendarPath = '/Users/aungkohtet/dotfiles/hammerspoon/calendar-app/calapp'
 
 function obj:parse_event(event_string)
     if not event_string then return nil end

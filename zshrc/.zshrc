@@ -59,15 +59,15 @@ alias .....="cd ../../../.."
 alias ......="cd ../../../../.."
 
 # GO
-export GOPATH='/Users/omerxx/go'
+export GOPATH='/Users/aungkohtet/go'
 
 # VIM
-alias v="/Users/omerxx/.nix-profile/bin/nvim"
+alias v="/Users/aungkohtet/.nix-profile/bin/nvim"
 
 # Nmap
 alias nm="nmap -sC -sV -oN nmap"
 
-export PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Users/omer/.vimpkg/bin:${GOPATH}/bin:/Users/omerxx/.cargo/bin
+export PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Users/omer/.vimpkg/bin:${GOPATH}/bin:/Users/aungkohtet/.cargo/bin
 
 alias cl='clear'
 
@@ -149,7 +149,7 @@ fv() { nvim "$(find . -type f -not -path '*/.*' | fzf)" }
  fi
  # End Nix
 
-export XDG_CONFIG_HOME="/Users/omerxx/.config"
+export XDG_CONFIG_HOME="/Users/aungkohtet/.config"
 
 eval "$(zoxide init zsh)"
 eval "$(atuin init zsh)"
