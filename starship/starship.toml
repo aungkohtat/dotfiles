@@ -13,12 +13,16 @@ success_symbol = '[➜](bold green)'
 [directory.substitutions]
 '~/tests/starship-custom' = 'work-project'
 
+[git_status]
+disabled = true
+
 [git_branch]
-format =  '[$symbol$branch(:$remote_branch)]($style)'
+disabled = true
+#format =  '[$symbol$branch(:$remote_branch)]($style)'
 
 [aws]
 format = '[$symbol(profile: "$profile" )(\(region: $region\) )]($style)'
-disabled = false
+disabled = true
 style = 'bold blue'
 symbol = " "
 
