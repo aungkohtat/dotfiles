@@ -3,8 +3,8 @@ return {
     "nvim-mini/mini.surround",
     opts = {
       mappings = {
-        add = "sa",
-        delete = "sd",
+        add = "<leader>sa",
+        delete = "<leader>sd",
         find = "gsf",
         find_left = "gsF",
         highlight = "gsh",
