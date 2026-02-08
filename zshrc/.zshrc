@@ -41,7 +41,7 @@ alias gba='git branch -a'
 alias gadd='git add'
 alias ga='git add -p'
 alias gcoall='git checkout -- .'
-alias gr='git remote'
+alias grm='git remote'
 alias gre='git reset'
 
 # Docker
@@ -51,6 +51,90 @@ alias dpa="docker ps -a"
 alias dl="docker ps -l -q"
 alias dx="docker exec -it"
 
+#terraform 
+# Core commands
+alias tf='terraform'
+alias tfi='terraform init'
+alias tfp='terraform plan'
+alias tfa='terraform apply'
+alias tfd='terraform destroy'
+alias tfv='terraform validate'
+alias tff='terraform fmt'
+alias tfo='terraform output'
+alias tfs='terraform state'
+
+# Plan with output file
+alias tfpo='terraform plan -out=tfplan'
+alias tfao='terraform apply tfplan'
+
+# Auto-approve (use carefully)
+alias tfaa='terraform apply -auto-approve'
+alias tfda='terraform destroy -auto-approve'
+
+# State operations
+alias tfsl='terraform state list'
+alias tfss='terraform state show'
+alias tfsm='terraform state mv'
+alias tfsr='terraform state rm'
+
+# Workspace management
+alias tfw='terraform workspace'
+alias tfwl='terraform workspace list'
+alias tfws='terraform workspace select'
+alias tfwn='terraform workspace new'
+
+# Init variations
+alias tfiu='terraform init -upgrade'
+alias tfir='terraform init -reconfigure'
+
+# Format recursive
+alias tffr='terraform fmt -recursive'
+
+# Show version
+alias tfver='terraform version'
+
+# tfenv
+alias tfei='tfenv install'
+alias tfeu='tfenv use'
+alias tfel='tfenv list'
+
+# tflint
+alias tfl='tflint'
+alias tflr='tflint --recursive'
+alias tfli='tflint --init'
+
+# trivy (security scan)
+alias tfscan='trivy config .'
+alias tfscanf='trivy config --severity HIGH,CRITICAL .'
+
+# infracost
+alias tfcost='infracost breakdown --path .'
+alias tfcostd='infracost diff --path .'
+
+# terraform-docs
+alias tfdoc='terraform-docs markdown table . > README.md'
+alias tfdocp='terraform-docs markdown table .'
+
+# aws-vault
+alias av='aws-vault'
+alias ave='aws-vault exec'
+alias avl='aws-vault list'
+alias ava='aws-vault add'
+alias avr='aws-vault remove'
+alias avs='aws-vault exec -- aws sts get-caller-identity'
+
+# granted (multi-account switching)
+alias assume='granted'
+
+# Refresh
+alias tfr='terraform refresh'
+
+# Console
+alias tfc='terraform console'
+
+# Graph (requires graphviz)
+alias tfg='terraform graph | dot -Tpng > graph.png'
+
 # Dirs
 alias ..="cd .."
 alias ...="cd ../.."
@@ -59,15 +143,15 @@ alias .....="cd ../../../.."
 alias ......="cd ../../../../.."
 
 # GO
-export GOPATH='/Users/omerxx/go'
+export GOPATH="$HOME/go"
 
 # VIM
-alias v="/Users/omerxx/.nix-profile/bin/nvim"
+alias v="$HOME/.nix-profile/bin/nvim"
 
 # Nmap
 alias nm="nmap -sC -sV -oN nmap"
 
-export PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Users/omer/.vimpkg/bin:${GOPATH}/bin:/Users/omerxx/.cargo/bin
+export PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$HOME/.vimpkg/bin:${GOPATH}/bin:$HOME/.cargo/bin
 
 alias cl='clear'
 
@@ -78,15 +162,13 @@ alias ka="kubectl apply -f"
 alias kg="kubectl get"
 alias kd="kubectl describe"
 alias kdel="kubectl delete"
-alias kl="kubectl logs"
+alias kl="kubectl logs -f"
 alias kgpo="kubectl get pod"
 alias kgd="kubectl get deployments"
 alias kc="kubectx"
 alias kns="kubens"
-alias kl="kubectl logs -f"
 alias ke="kubectl exec -it"
 alias kcns='kubectl config set-context --current --namespace'
-alias podname=''
 
 # HTTP requests with xh!
 alias http="xh"
@@ -97,7 +179,7 @@ bindkey jj vi-cmd-mode
 # Eza
 alias l="eza -l --icons --git -a"
 alias lt="eza --tree --level=2 --long --icons --git"
-alias ltree="eza --tree --level=2  --icons --git"
+alias ltree="eza --tree --level=2 --icons --git"
 
 # SEC STUFF
 alias gobust='gobuster dir --wordlist ~/security/wordlists/diccnoext.txt --wildcard --url'
@@ -106,10 +188,16 @@ alias massdns='~/hacking/tools/massdns/bin/massdns -r ~/hacking/tools/massdns/li
 alias server='python -m http.server 4445'
 alias tunnel='ngrok http 4445'
 alias fuzz='ffuf -w ~/hacking/SecLists/content_discovery_all.txt -mc all -u'
-alias gr='~/go/src/github.com/tomnomnom/gf/gf'
+alias gf='~/go/src/github.com/tomnomnom/gf/gf'
 
 ### FZF ###
 export FZF_DEFAULT_COMMAND='fd --type f --hidden --follow'
+export FZF_DEFAULT_OPTS=" \
+--color=bg+:#313244,bg:#1e1e2e,spinner:#f5e0dc,hl:#f38ba8 \
+--color=fg:#cdd6f4,header:#f38ba8,info:#cba6f7,pointer:#f5e0dc \
+--color=marker:#b4befe,fg+:#cdd6f4,prompt:#cba6f7,hl+:#f38ba8 \
+--color=selected-bg:#45475a \
+--color=border:#313244,label:#cdd6f4"
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
 export PATH=/opt/homebrew/bin:$PATH
@@ -149,8 +237,11 @@ fv() { nvim "$(find . -type f -not -path '*/.*' | fzf)" }
  fi
  # End Nix
 
-export XDG_CONFIG_HOME="/Users/omerxx/.config"
+export XDG_CONFIG_HOME="$HOME/.config"
 
 eval "$(zoxide init zsh)"
 eval "$(atuin init zsh)"
 eval "$(direnv hook zsh)"
+# Load API keys from a file NOT tracked by git
+[ -f ~/.secrets ] && source ~/.secrets
+export PATH="$HOME/.local/bin:$PATH"

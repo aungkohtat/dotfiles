@@ -1,12 +1,11 @@
-theme = catppuccin-mocha
-font-size = 18
+theme = Catppuccin Mocha
+font-size = 15
 background-blur-radius = 20
 mouse-hide-while-typing = true
 window-decoration = true
 copy-on-select = true
 window-padding-x = 15
 window-padding-y = 15
-theme = Atom
 window-width = 70
 window-height = 20
 keybind = global:cmd+/=toggle_quick_terminal
