@@ -245,3 +245,4 @@ eval "$(direnv hook zsh)"
 # Load API keys from a file NOT tracked by git
 [ -f ~/.secrets ] && source ~/.secrets
 export PATH="$HOME/.local/bin:$PATH"
+export PATH="$HOME/repos/scripts:$PATH"
