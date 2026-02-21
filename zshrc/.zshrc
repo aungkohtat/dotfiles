@@ -183,6 +183,7 @@ alias http="xh"
 alias nm="nmap -sC -sV -oN nmap"
 alias mat='osascript -e "tell application \"System Events\" to key code 126 using {command down}" && tmux neww "cmatrix"'
 alias rr='ranger'
+alias devops='tmux neww "top"'
 
 # Dirs
 alias ..="cd .."
