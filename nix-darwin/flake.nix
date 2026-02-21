@@ -33,7 +33,7 @@
       nixpkgs.hostPlatform = "aarch64-darwin";
       security.pam.enableSudoTouchIdAuth = true;
 
-      users.users.omerxx.home = "/Users/omerxx";
+      users.users.aungkohtet.home = "/Users/aungkohtet";
       home-manager.backupFileExtension = "backup";
       nix.configureBuildUsers = true;
       nix.useDaemon = true;
@@ -43,7 +43,7 @@
         dock.mru-spaces = false;
         finder.AppleShowAllExtensions = true;
         finder.FXPreferredViewStyle = "clmv";
-        loginwindow.LoginwindowText = "devops-toolbox";
+        loginwindow.LoginwindowText = "aungkohtet";
         screencapture.location = "~/Pictures/screenshots";
         screensaver.askForPasswordDelay = 10;
       };
@@ -60,19 +60,19 @@
     };
   in
   {
-    darwinConfigurations."Omers-MacBook-Pro" = nix-darwin.lib.darwinSystem {
+    darwinConfigurations."Aungkohtet-MacBook" = nix-darwin.lib.darwinSystem {
       system = "aarch64-darwin";
       modules = [ 
 	configuration
         home-manager.darwinModules.home-manager {
           home-manager.useGlobalPkgs = true;
           home-manager.useUserPackages = true;
-          home-manager.users.omerxx = import ./home.nix;
+          home-manager.users.aungkohtet = import ./home.nix;
         }
       ];
     };
 
     # Expose the package set, including overlays, for convenience.
-    darwinPackages = self.darwinConfigurations."Omers-MacBook-Pro".pkgs;
+    darwinPackages = self.darwinConfigurations."Aungkohtet-MacBook".pkgs;
   };
 }

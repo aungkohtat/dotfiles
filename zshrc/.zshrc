@@ -1,13 +1,51 @@
-# Path to your oh-my-zsh installation.
-# Reevaluate the prompt string each time it's displaying a prompt
+# ── Environment ─────────────────────────────────────
+typeset -U PATH  # deduplicate PATH entries automatically
+export GOPATH="$HOME/go"
+export BUN_INSTALL="$HOME/.bun"
+export XDG_CONFIG_HOME="$HOME/.config"
+export NIX_CONF_DIR=$HOME/.config/nix
+export KUBECONFIG=~/.kube/config
+export LANG=en_US.UTF-8
+export EDITOR=/opt/homebrew/bin/nvim
+export STARSHIP_CONFIG=~/.config/starship/starship.toml
+
+path=(
+  $HOME/.local/bin
+  $HOME/repos/scripts
+  $BUN_INSTALL/bin
+  /opt/homebrew/bin
+  /run/current-system/sw/bin
+  ${GOPATH}/bin
+  $HOME/.cargo/bin
+  $HOME/.vimpkg/bin
+  /usr/local/bin
+  /usr/bin
+  /bin
+  /usr/sbin
+  /sbin
+  $path
+)
+
+# ── Nix ─────────────────────────────────────────────
+if [ -e '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh' ]; then
+  . '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh'
+fi
+
+# ── Completion ──────────────────────────────────────
 setopt prompt_subst
 zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'
 autoload bashcompinit && bashcompinit
 autoload -Uz compinit
 compinit
-source <(kubectl completion zsh)
+# lazy-load kubectl completion (faster shell startup)
+kubectl() {
+  unfunction kubectl
+  source <(command kubectl completion zsh)
+  command kubectl "$@"
+}
 complete -C '/usr/local/bin/aws_completer' aws
 
+# ── Plugins ─────────────────────────────────────────
 source $(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh
 bindkey '^w' autosuggest-execute
 bindkey '^e' autosuggest-accept
@@ -17,17 +55,27 @@ bindkey '^k' up-line-or-search
 bindkey '^j' down-line-or-search
 
 eval "$(starship init zsh)"
-export STARSHIP_CONFIG=~/.config/starship/starship.toml
+eval "$(zoxide init zsh)"
+eval "$(atuin init zsh)"
+eval "$(direnv hook zsh)"
 
-# You may need to manually set your language environment
-export LANG=en_US.UTF-8
+### FZF ###
+export FZF_DEFAULT_COMMAND='fd --type f --hidden --follow'
+export FZF_DEFAULT_OPTS=" \
+--color=bg+:#313244,bg:#1e1e2e,spinner:#f5e0dc,hl:#f38ba8 \
+--color=fg:#cdd6f4,header:#f38ba8,info:#cba6f7,pointer:#f5e0dc \
+--color=marker:#b4befe,fg+:#cdd6f4,prompt:#cba6f7,hl+:#f38ba8 \
+--color=selected-bg:#45475a \
+--color=border:#313244,label:#cdd6f4"
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
-export EDITOR=/opt/homebrew/bin/nvim
+# bun completions
+[ -s "/Users/aungkohtet/.bun/_bun" ] && source "/Users/aungkohtet/.bun/_bun"
 
-alias la=tree
-alias cat=bat
+# VI Mode!!!
+bindkey jj vi-cmd-mode
 
-# Git
+# ── Aliases: Git ────────────────────────────────────
 alias gc="git commit -m"
 alias gca="git commit -a -m"
 alias gp="git push origin HEAD"
@@ -44,15 +92,14 @@ alias gcoall='git checkout -- .'
 alias grm='git remote'
 alias gre='git reset'
 
-# Docker
+# ── Aliases: Docker ─────────────────────────────────
 alias dco="docker compose"
 alias dps="docker ps"
 alias dpa="docker ps -a"
 alias dl="docker ps -l -q"
 alias dx="docker exec -it"
 
-#terraform 
-# Core commands
+# ── Aliases: Terraform ──────────────────────────────
 alias tf='terraform'
 alias tfi='terraform init'
 alias tfp='terraform plan'
@@ -62,36 +109,25 @@ alias tfv='terraform validate'
 alias tff='terraform fmt'
 alias tfo='terraform output'
 alias tfs='terraform state'
-
-# Plan with output file
 alias tfpo='terraform plan -out=tfplan'
 alias tfao='terraform apply tfplan'
-
-# Auto-approve (use carefully)
 alias tfaa='terraform apply -auto-approve'
 alias tfda='terraform destroy -auto-approve'
-
-# State operations
 alias tfsl='terraform state list'
 alias tfss='terraform state show'
 alias tfsm='terraform state mv'
 alias tfsr='terraform state rm'
-
-# Workspace management
 alias tfw='terraform workspace'
 alias tfwl='terraform workspace list'
 alias tfws='terraform workspace select'
 alias tfwn='terraform workspace new'
-
-# Init variations
 alias tfiu='terraform init -upgrade'
 alias tfir='terraform init -reconfigure'
-
-# Format recursive
 alias tffr='terraform fmt -recursive'
-
-# Show version
 alias tfver='terraform version'
+alias tfr='terraform refresh'
+alias tfc='terraform console'
+alias tfg='terraform graph | dot -Tpng > graph.png'
 
 # tfenv
 alias tfei='tfenv install'
@@ -103,7 +139,7 @@ alias tfl='tflint'
 alias tflr='tflint --recursive'
 alias tfli='tflint --init'
 
-# trivy (security scan)
+# trivy
 alias tfscan='trivy config .'
 alias tfscanf='trivy config --severity HIGH,CRITICAL .'
 
@@ -115,48 +151,16 @@ alias tfcostd='infracost diff --path .'
 alias tfdoc='terraform-docs markdown table . > README.md'
 alias tfdocp='terraform-docs markdown table .'
 
-# aws-vault
+# ── Aliases: AWS ────────────────────────────────────
 alias av='aws-vault'
 alias ave='aws-vault exec'
 alias avl='aws-vault list'
 alias ava='aws-vault add'
 alias avr='aws-vault remove'
 alias avs='aws-vault exec -- aws sts get-caller-identity'
-
-# granted (multi-account switching)
 alias assume='granted'
 
-# Refresh
-alias tfr='terraform refresh'
-
-# Console
-alias tfc='terraform console'
-
-# Graph (requires graphviz)
-alias tfg='terraform graph | dot -Tpng > graph.png'
-
-# Dirs
-alias ..="cd .."
-alias ...="cd ../.."
-alias ....="cd ../../.."
-alias .....="cd ../../../.."
-alias ......="cd ../../../../.."
-
-# GO
-export GOPATH="$HOME/go"
-
-# VIM
-alias v="$HOME/.nix-profile/bin/nvim"
-
-# Nmap
-alias nm="nmap -sC -sV -oN nmap"
-
-export PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$HOME/.vimpkg/bin:${GOPATH}/bin:$HOME/.cargo/bin
-
-alias cl='clear'
-
-# K8S
-export KUBECONFIG=~/.kube/config
+# ── Aliases: K8S ────────────────────────────────────
 alias k="kubectl"
 alias ka="kubectl apply -f"
 alias kg="kubectl get"
@@ -170,43 +174,33 @@ alias kns="kubens"
 alias ke="kubectl exec -it"
 alias kcns='kubectl config set-context --current --namespace'
 
-# HTTP requests with xh!
+# ── Aliases: General ────────────────────────────────
+alias la=tree
+alias cat=bat
+alias cl='clear'
+alias v="$HOME/.nix-profile/bin/nvim"
 alias http="xh"
+alias nm="nmap -sC -sV -oN nmap"
+alias mat='osascript -e "tell application \"System Events\" to key code 126 using {command down}" && tmux neww "cmatrix"'
+alias rr='ranger'
 
-# VI Mode!!!
-bindkey jj vi-cmd-mode
+# Dirs
+alias ..="cd .."
+alias ...="cd ../.."
+alias ....="cd ../../.."
+alias .....="cd ../../../.."
+alias ......="cd ../../../../.."
 
 # Eza
 alias l="eza -l --icons --git -a"
 alias lt="eza --tree --level=2 --long --icons --git"
 alias ltree="eza --tree --level=2 --icons --git"
 
-# SEC STUFF
-alias gobust='gobuster dir --wordlist ~/security/wordlists/diccnoext.txt --wildcard --url'
-alias dirsearch='python dirsearch.py -w db/dicc.txt -b -u'
-alias massdns='~/hacking/tools/massdns/bin/massdns -r ~/hacking/tools/massdns/lists/resolvers.txt -t A -o S bf-targets.txt -w livehosts.txt -s 4000'
-alias server='python -m http.server 4445'
-alias tunnel='ngrok http 4445'
-alias fuzz='ffuf -w ~/hacking/SecLists/content_discovery_all.txt -mc all -u'
-alias gf='~/go/src/github.com/tomnomnom/gf/gf'
-
-### FZF ###
-export FZF_DEFAULT_COMMAND='fd --type f --hidden --follow'
-export FZF_DEFAULT_OPTS=" \
---color=bg+:#313244,bg:#1e1e2e,spinner:#f5e0dc,hl:#f38ba8 \
---color=fg:#cdd6f4,header:#f38ba8,info:#cba6f7,pointer:#f5e0dc \
---color=marker:#b4befe,fg+:#cdd6f4,prompt:#cba6f7,hl+:#f38ba8 \
---color=selected-bg:#45475a \
---color=border:#313244,label:#cdd6f4"
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-
-export PATH=/opt/homebrew/bin:$PATH
-
-alias mat='osascript -e "tell application \"System Events\" to key code 126 using {command down}" && tmux neww "cmatrix"'
-
-# Nix!
-export NIX_CONF_DIR=$HOME/.config/nix
-export PATH=/run/current-system/sw/bin:$PATH
+# ── Functions ───────────────────────────────────────
+cx() { cd "$@" && l; }
+fcd() { cd "$(fd --type d --hidden --follow | fzf)" && l; }
+f() { echo "$(fd --type f --hidden --follow | fzf)" | pbcopy; }
+fv() { nvim "$(fd --type f --hidden --follow | fzf)"; }
 
 function ranger {
 	local IFS=$'\t\n'
@@ -223,26 +217,29 @@ function ranger {
 	fi
 	command rm -f -- "$tempfile" 2>/dev/null
 }
-alias rr='ranger'
 
-# navigation
-cx() { cd "$@" && l; }
-fcd() { cd "$(find . -type d -not -path '*/.*' | fzf)" && l; }
-f() { echo "$(find . -type f -not -path '*/.*' | fzf)" | pbcopy }
-fv() { nvim "$(find . -type f -not -path '*/.*' | fzf)" }
+# SEC STUFF
+alias gobust='gobuster dir --wordlist ~/security/wordlists/diccnoext.txt --wildcard --url'
+alias dirsearch='python dirsearch.py -w db/dicc.txt -b -u'
+alias massdns='~/hacking/tools/massdns/bin/massdns -r ~/hacking/tools/massdns/lists/resolvers.txt -t A -o S bf-targets.txt -w livehosts.txt -s 4000'
+alias server='python -m http.server 4445'
+alias tunnel='ngrok http 4445'
+alias fuzz='ffuf -w ~/hacking/SecLists/content_discovery_all.txt -mc all -u'
+alias gf='~/go/src/github.com/tomnomnom/gf/gf'
 
- # Nix
- if [ -e '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh' ]; then
-	 . '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh'
- fi
- # End Nix
-
-export XDG_CONFIG_HOME="$HOME/.config"
-
-eval "$(zoxide init zsh)"
-eval "$(atuin init zsh)"
-eval "$(direnv hook zsh)"
-# Load API keys from a file NOT tracked by git
+# ── Secrets (must be near end) ──────────────────────
+# Atlassian token and other API keys loaded from ~/.secrets
 [ -f ~/.secrets ] && source ~/.secrets
-export PATH="$HOME/.local/bin:$PATH"
-export PATH="$HOME/repos/scripts:$PATH"
+
+# ── Ryan Standup Logger ──────────────────────────────
+_standup_log_cmd() {
+    local cmd
+    cmd=$(fc -ln -1 2>/dev/null | sed 's/^[[:space:]]*//')
+    [[ -z "$cmd" ]] && return
+    [[ "$cmd" =~ ^(ls|ll|la|cd|pwd|clear|cl|exit|history|cat|echo|man|help)$ ]] && return
+    local log="$HOME/.openclaw/workspace/logs/terminal-activity.log"
+    mkdir -p "$(dirname "$log")"
+    echo "$(date -u +%Y-%m-%dT%H:%M:%SZ) | $(pwd) | $cmd" >> "$log"
+}
+precmd_functions+=(_standup_log_cmd)
+# ── End Ryan Standup Logger ─────────────────────────

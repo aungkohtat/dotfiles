@@ -3,3 +3,7 @@ tmux/plugins/
 raycast
 fzf
 history.txt
+*.backup
+.secrets
+*.tfstate
+.env
