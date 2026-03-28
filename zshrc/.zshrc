@@ -254,8 +254,9 @@ _standup_log_cmd() {
 precmd_functions+=(_standup_log_cmd)
 # ── End Ryan Standup Logger ─────────────────────────
 
-# Terraform Cloud API token (from terraform login)
-export TFE_TOKEN="REDACTED"
+# Terraform Cloud API token — store in ~/.secrets (not committed)
+# export TFE_TOKEN="..."
+[ -f "$HOME/.secrets" ] && source "$HOME/.secrets"
 
 alias gam="/Users/aungkohtet/bin/gam7/gam"
 export SQUADCAST_REFRESH_TOKEN="your-api-key-here"
