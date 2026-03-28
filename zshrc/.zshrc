@@ -59,6 +59,15 @@ eval "$(zoxide init zsh)"
 eval "$(atuin init zsh)"
 eval "$(direnv hook zsh)"
 
+# ── Television ──────────────────────────────────────
+if command -v tv &>/dev/null; then
+  alias tvk="tv k8s-pods"
+  alias tvg="tv git-log"
+  alias tva="tv aws-instances"
+  alias tvd="tv docker-containers"
+  alias tvr="tv git-repos"
+fi
+
 ### FZF ###
 export FZF_DEFAULT_COMMAND='fd --type f --hidden --follow'
 export FZF_DEFAULT_OPTS=" \
@@ -244,3 +253,9 @@ _standup_log_cmd() {
 }
 precmd_functions+=(_standup_log_cmd)
 # ── End Ryan Standup Logger ─────────────────────────
+
+# Terraform Cloud API token (from terraform login)
+export TFE_TOKEN="REDACTED"
+
+alias gam="/Users/aungkohtet/bin/gam7/gam"
+export SQUADCAST_REFRESH_TOKEN="your-api-key-here"

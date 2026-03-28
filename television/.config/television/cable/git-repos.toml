@@ -1,0 +1,24 @@
+[metadata]
+name = "git-repos"
+requirements = ["fd", "git"]
+description = "A channel to select from git repositories on your local machine."
+
+[source]
+command = "fd -g .git -HL -t d -d 10 --prune ~ -E 'Library' -E 'Application Support' --exec dirname '{}'"
+display = "{split:/:-1}"
+
+[preview]
+command = "cd '{}'; git log -n 200 --pretty=medium --all --graph --color"
+
+[keybindings]
+enter = "actions:cd"
+ctrl-e = "actions:edit"
+
+[actions.cd]
+command = "cd '{}' && $SHELL"
+mode = "execute"
+
+[actions.edit]
+command = "${EDITOR:-vim} '{}'"
+shell = "bash"
+mode = "execute"

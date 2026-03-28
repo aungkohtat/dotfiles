@@ -1,0 +1,18 @@
+[metadata]
+name = "git-remotes"
+description = "List and manage git remotes"
+requirements = ["git"]
+
+[source]
+command = "git remote"
+
+[preview]
+command = "git remote show '{}'"
+
+[actions.fetch]
+command = "git fetch '{}'"
+mode = "execute"
+
+[actions.remove]
+command = "git remote remove '{}'"
+mode = "execute"

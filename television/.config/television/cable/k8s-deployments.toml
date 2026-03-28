@@ -1,0 +1,24 @@
+[metadata]
+name = "k8s-deployments"
+requirements = ["kubectl"]
+
+[source]
+command = [
+  "kubectl get deployments -o go-template --template '{{range .items}}{{.metadata.namespace}} {{.metadata.name}}{{\"\\n\"}}{{end}}'",
+  "kubectl get deployments -o go-template --template '{{range .items}}{{.metadata.namespace}} {{.metadata.name}}{{\"\\n\"}}{{end}}' --all-namespaces",
+]
+output = "{1}"
+
+[preview]
+command = "kubectl describe -n {0} deployments/{1}"
+
+[ui]
+layout = "portrait"
+preview_panel = { size = 60 }
+
+[keybindings]
+ctrl-d = "actions:delete"
+
+[actions.delete]
+command = "kubectl delete -n {0} deployments/{1}"
+mode = "execute"

@@ -1,0 +1,103 @@
+prSections:
+    - title: My Pull Requests
+      filters: is:open author:@me org:IYCLLC
+    - title: Needs My Review
+      filters: is:open review-requested:@me org:IYCLLC
+    - title: Involved
+      filters: is:open involves:@me -author:@me org:IYCLLC
+    - title: Infra PRs
+      filters: is:open org:IYCLLC repo:IYCLLC/ms-infra-aws repo:IYCLLC/ms-infra-tfc repo:IYCLLC/ms-infra-github
+    - title: K8s PRs
+      filters: is:open repo:IYCLLC/ms-k8s-config-aws
+    - title: Apps PRs
+      filters: is:open org:IYCLLC repo:IYCLLC/ms-auth-app repo:IYCLLC/ms-noti-app repo:IYCLLC/ms-pms-app repo:IYCLLC/ms-times-app
+issuesSections:
+    - title: My Issues
+      filters: is:open author:@me org:IYCLLC
+    - title: Assigned
+      filters: is:open assignee:@me org:IYCLLC
+    - title: Involved
+      filters: is:open involves:@me -author:@me org:IYCLLC
+notificationsSections:
+    - title: All
+      filters: ""
+    - title: Participating
+      filters: reason:participating
+    - title: Mentioned
+      filters: reason:mention
+    - title: Review Requested
+      filters: reason:review-requested
+    - title: Assigned
+      filters: reason:assign
+repo:
+    branchesRefetchIntervalSeconds: 30
+    prsRefetchIntervalSeconds: 60
+defaults:
+    preview:
+        open: true
+        width: 0.45
+    prsLimit: 30
+    prApproveComment: LGTM
+    issuesLimit: 20
+    notificationsLimit: 20
+    view: prs
+    layout:
+        prs:
+            updatedAt:
+                width: 5
+            createdAt:
+                width: 5
+            repo:
+                width: 25
+            author:
+                width: 15
+            authorIcon:
+                hidden: false
+            assignees:
+                width: 20
+                hidden: true
+            base:
+                width: 15
+                hidden: false
+            lines:
+                width: 10
+        issues:
+            updatedAt:
+                width: 5
+            createdAt:
+                width: 5
+            repo:
+                width: 20
+            creator:
+                width: 15
+            creatorIcon:
+                hidden: false
+            assignees:
+                width: 20
+                hidden: true
+    refetchIntervalMinutes: 15
+keybindings:
+    prs:
+        - key: O
+          command: gh pr view {{.Number}} --web
+        - key: c
+          command: gh pr checkout {{.Number}}
+repoPaths:
+    IYCLLC/ms-infra-aws: ~/repos/infra/ms-infra-aws
+    IYCLLC/ms-infra-tfc: ~/repos/infra/ms-infra-tfc
+    IYCLLC/ms-infra-github: ~/repos/infra/ms-infra-github
+    IYCLLC/ms-infra-squadcast: ~/repos/infra/ms-infra-squadcast
+    IYCLLC/ms-k8s-config-aws: ~/repos/infra/ms-k8s-config-aws
+    IYCLLC/ms-workspace: ~/repos/infra/ms-workspace
+theme:
+    ui:
+        sectionsShowCount: true
+        table:
+            showSeparator: true
+            compact: false
+pager:
+    diff: ""
+confirmQuit: false
+showAuthorIcons: true
+smartFilteringAtLaunch: true
+includeReadNotifications: false

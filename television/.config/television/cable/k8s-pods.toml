@@ -1,0 +1,34 @@
+[metadata]
+name = "k8s-pods"
+requirements = ["kubectl"]
+
+[source]
+command = [
+  "kubectl get pods -o go-template --template '{{range .items}}{{.metadata.namespace}} {{.metadata.name}}{{\"\\n\"}}{{end}}'",
+  "kubectl get pods -o go-template --template '{{range .items}}{{.metadata.namespace}} {{.metadata.name}}{{\"\\n\"}}{{end}}' --all-namespaces",
+]
+output = "{1}"
+
+[preview]
+command = "kubectl describe -n {0} pods/{1}"
+
+[ui]
+layout = "portrait"
+preview_panel = { size = 60 }
+
+[keybindings]
+ctrl-d = "actions:delete"
+ctrl-e = "actions:exec"
+ctrl-l = "actions:logs"
+
+[actions.exec]
+command = "kubectl exec -i -t -n {0} pods/{1} -- /bin/sh"
+mode = "execute"
+
+[actions.delete]
+command = "kubectl delete -n {0} pods/{1}"
+mode = "execute"
+
+[actions.logs]
+command = "kubectl logs -f -n {0} pods/{1}"
+mode = "execute"

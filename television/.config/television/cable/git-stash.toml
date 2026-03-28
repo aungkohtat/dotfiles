@@ -1,0 +1,34 @@
+[metadata]
+name = "git-stash"
+description = "Browse and manage git stash entries"
+requirements = ["git"]
+
+[source]
+command = "git stash list --color=always"
+ansi = true
+output = "{strip_ansi|split:\\::0}"
+no_sort = true
+frecency = false
+
+[preview]
+command = "git stash show -p --color=always '{strip_ansi|split:\\::0}'"
+
+[ui]
+layout = "portrait"
+
+[keybindings]
+enter = "actions:apply"
+ctrl-p = "actions:pop"
+ctrl-d = "actions:drop"
+
+[actions.apply]
+command = "git stash apply '{strip_ansi|split:\\::0}'"
+mode = "execute"
+
+[actions.pop]
+command = "git stash pop '{strip_ansi|split:\\::0}'"
+mode = "execute"
+
+[actions.drop]
+command = "git stash drop '{strip_ansi|split:\\::0}'"
+mode = "execute"

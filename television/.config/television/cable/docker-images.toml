@@ -1,0 +1,31 @@
+[metadata]
+name = "docker-images"
+description = "A channel to select from Docker images"
+requirements = ["docker", "jq"]
+
+[source]
+command = "docker images --format '{{.Repository}}:{{.Tag}} {{.ID}}'"
+output = "{split: :-1}"
+
+[preview]
+command = "docker image inspect '{split: :-1}' | jq -C"
+
+[ui]
+layout = "portrait"
+
+[keybindings]
+ctrl-r = "actions:run"
+ctrl-d = "actions:remove"
+ctrl-s = "actions:shell"
+
+[actions.run]
+command = "docker run -it '{split: :-1}'"
+mode = "execute"
+
+[actions.shell]
+command = "docker run -it '{split: :-1}' /bin/sh"
+mode = "execute"
+
+[actions.remove]
+command = "docker rmi '{split: :-1}'"
+mode = "execute"
