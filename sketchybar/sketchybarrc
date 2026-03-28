@@ -8,6 +8,8 @@ PLUGIN_DIR="$HOME/.config/sketchybar/plugins" # Directory where all the plugin s
 
 FONT="SF Pro" # Needs to have Regular, Bold, Semibold, Heavy and Black variants
 SPACE_CLICK_SCRIPT="yabai -m space --focus \$SID 2>/dev/null" # The script that is run for clicking on space components
+POPUP_CLICK_SCRIPT="sketchybar --set \$NAME popup.drawing=toggle"
+HELPER=git.felix.helper
 
 PADDINGS=3 # All paddings use this value (icon, label, background)
 
@@ -54,6 +56,8 @@ source "$ITEM_DIR/spaces.sh"
 # source "$ITEM_DIR/spotify.sh"
 
 # Right
+source "$ITEM_DIR/github.sh"
+source "$ITEM_DIR/cpu.sh"
 source "$ITEM_DIR/calendar.sh"
 
 ############## FINALIZING THE SETUP ##############
