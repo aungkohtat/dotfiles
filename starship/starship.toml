@@ -34,6 +34,12 @@ contexts = [
   { context_pattern = "arn:aws:eks:us-west-2:577926974532:cluster/zd-pvc-omer", style = "green", context_alias = "omerxx", symbol = " " },
 ]
 
+[helm]
+disabled = false
+format = '[$symbol($version )]($style)'
+style = 'bold maroon'
+symbol = '⎈ '
+
 [docker_context]
 disabled = true
 

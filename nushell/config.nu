@@ -1,6 +1,6 @@
 # Nushell Config File
 #
-# version = "0.95.0"
+# version = "0.111.0"
 
 # For more information on defining custom themes, see
 # https://www.nushell.sh/book/coloring_and_theming.html
@@ -207,11 +207,6 @@ $env.config = {
         use_ls_colors: true # set this to true to enable file/path/directory completions using LS_COLORS
     }
 
-    filesize: {
-        metric: false # true => KB, MB, GB (ISO standard), false => KiB, MiB, GiB (Windows standard)
-        format: "auto" # b, kb, kib, mb, mib, gb, gib, tb, tib, pb, pib, eb, eib, auto
-    }
-
     cursor_shape: {
         emacs: block # block, underscore, line, blink_block, blink_underscore, blink_line, inherit to skip setting cursor shape (line is the default)
         vi_insert: block # block, underscore, line, blink_block, blink_underscore, blink_line, inherit to skip setting cursor shape (block is the default)
@@ -219,8 +214,7 @@ $env.config = {
     }
 
     color_config: $dark_theme # if you want a more interesting theme, you can replace the empty record with `$dark_theme`, `$light_theme` or another custom record
-    use_grid_icons: true
-    footer_mode: "25" # always, never, number_of_rows, auto
+    footer_mode: 25 # always, never, auto, or int
     float_precision: 2 # the precision for displaying floats in tables
     buffer_editor: "" # command that will be used to edit the current line buffer with ctrl+o, if unset fallback to $env.EDITOR and $env.VISUAL
     use_ansi_coloring: true
@@ -277,17 +271,7 @@ $env.config = {
     }
 
     hooks: {
-        pre_prompt: [{|| 
-            if (which direnv | is-empty) {
-                return
-            }
-            try {
-                direnv export json | from json | default {} | load-env
-                if 'PATH' in $env {
-                    $env.PATH = ($env.PATH | split row (char esep))
-                }
-            } catch {}
-        }]
+        pre_prompt: [{ null }] # run before the prompt is shown
         pre_execution: [{ null }] # run before the repl input is run
         env_change: {
             PWD: [{|before, after| null }] # run if the PWD environment is different since the last repl input
@@ -913,11 +897,84 @@ alias lt = eza --tree --level=2 --long --icons --git
 alias v = nvim
 alias hms = /nix/store/6kc5srg83nkyg21am089xx7pvq44kn2c-home-manager/bin/home-manager switch
 alias as = aerospace
-alias asr = atuin scripts run
 
 def ff [] {
     aerospace list-windows --all | fzf --bind 'enter:execute(bash -c "aerospace focus --window-id {1}")+abort'
 }
+
+# Infra Dashboard - overview of all ms-* repos
+def id [] {
+    let infra_path = ($env.HOME | path join "repos" "infra")
+
+    let providers = {
+        ms-infra-aws: "  AWS"
+        ms-infra-gcp: "  GCP"
+        ms-infra-cloudflare: "󰡷 CF"
+        ms-infra-github: "  GitHub"
+        ms-infra-sentry: "  Sentry"
+        ms-infra-squadcast: "  Squad"
+        ms-infra-tfc: "  TFC"
+        ms-k8s-config-aws: "⎈ K8s"
+        ms-infrastructure: "  Infra"
+    }
+
+    ls $infra_path
+        | where type == dir
+        | where { |row| ($row.name | path basename) starts-with "ms-" }
+        | each { |row|
+            let name = ($row.name | path basename)
+            let branch = (do { git -C $row.name branch --show-current } | complete).stdout | str trim
+            let changes = (do { git -C $row.name status --porcelain } | complete).stdout | str trim
+            let status = if ($changes | is-empty) { "✓ clean" } else { "✗ dirty" }
+            let provider = if ($name in $providers) { $providers | get $name } else { "  other" }
+            let tf_files = (glob ($row.name | path join "*.tf"))
+            let tf = if ($tf_files | is-empty) { "" } else { "⚙" }
+
+            {
+                provider: $provider
+                repo: $name
+                branch: $branch
+                status: $status
+                tf: $tf
+            }
+        }
+        | sort-by provider
+}
+
+# Infra Dashboard + select repo and open in tmux
+def idd [] {
+    let dashboard = (id)
+    $dashboard | print
+    let selection = ($dashboard
+        | get repo
+        | str join (char newline)
+        | fzf --prompt "open> "
+        | str trim)
+
+    if ($selection | is-empty) { return }
+
+    let repo_path = ([$env.HOME "repos" "infra" $selection] | path join)
+    tmux new-window -n $selection -c $repo_path
+}
+
+# Fuzzy search ~/repos/infra subdirectories and open in a named tmux window
+def ti [] {
+    let selection = (ls ~/repos/infra
+        | where type == dir
+        | get name
+        | each { |p| $p | path basename }
+        | str join (char newline)
+        | fzf --prompt "infra> "
+        | str trim)
+
+    if ($selection | is-empty) {
+        return
+    }
+
+    let repo_path = ([$env.HOME "repos" "infra" $selection] | path join)
+    tmux new-window -n $selection -c $repo_path
+}
+
 
 # Git
 alias gc = git commit -m
@@ -955,18 +1012,3 @@ source ~/.zoxide.nu
 source ~/.cache/carapace/init.nu
 source ~/.local/share/atuin/init.nu
 use ~/.cache/starship/init.nu
-
-let ruby_ver = "3.4.0"
-let gem_home = ($nu.home-path | path join ".gem" "ruby" $ruby_ver)
-let gem_bin = ($gem_home | path join "bin")
-
-# Set GEM paths
-$env.GEM_HOME = $gem_home
-$env.GEM_PATH = $gem_home
-
-# Add gem bin to PATH if it exists
-if ($gem_bin | path exists) {
-  $env.PATH = ($env.PATH | prepend $gem_bin)
-}
-$env.DIRENV_LOG_FORMAT = ""
-

@@ -3,5 +3,6 @@
 -- Add any additional options here
 --
 vim.opt.wrap = true
-vim.g.codeium_os = "Darwin"
-vim.g.codeium_arch = "arm64"
+
+-- Auto-reload files changed outside Neovim (e.g., git pull in terminal)
+vim.opt.autoread = true
